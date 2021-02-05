@@ -27,8 +27,6 @@ CREATE TABLE "reviews" (
   "rental_id" INTEGER NOT NULL,
   "user_id" INTEGER NOT NULL,
   "timestamp" TEXT NOT NULL,
-  "name" VARCHAR(40) NOT NULL,
-  "avatar" TEXT NOT NULL,
   "review" TEXT NOT NULL,
   "cleanliness" INTEGER NOT NULL,
   "accuracy" INTEGER NOT NULL,
