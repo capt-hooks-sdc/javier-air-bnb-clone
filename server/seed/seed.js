@@ -1,76 +1,96 @@
-/* eslint-disable no-console */
 const faker = require('faker');
-const { AvatarGenerator } = require('random-avatar-generator');
-const db = require('../db');
+const fs = require('fs');
 
-const generator = new AvatarGenerator();
+const writeUserCols = fs.createWriteStream('server/db/csvData/users.csv');
+const writeRentalCols = fs.createWriteStream('server/db/csvData/rentals.csv');
+const writeReviewCols = fs.createWriteStream('server/db/csvData/reviews.csv');
 
-/* Helper Functions */
-const { getRand, tagGenerator } = require('./helpers.js');
-
-/* Data Seed Methods */
-const addLocations = () => {
-  const street = faker.address.streetAddress();
-  const city = faker.address.city();
-  const state = faker.address.state();
-  const zip = faker.address.zipCode();
-  const address = `${street}, ${city}, ${state} ${zip}`;
-  // [location]
-  const locations = [address];
-
-  const locationQuery = 'INSERT INTO locations (name) VALUES (?);';
-  db.query(locationQuery, locations, (err) => {
-    if (err) { console.error('Locations: ', err); }
-  });
-};
-
-const addReviews = (listingId) => {
-  // [name, avatar, date, review, cleanliness, accuracy, comm,
-  // location, check_in, value, location_id]
-  const reviews = [faker.name.findName(), generator.generateRandomAvatar(),
-    faker.date.between('2015-01-01', '2021-01-01'), faker.lorem.paragraph(), getRand(3, 5), getRand(1, 5),
-    getRand(1, 5), getRand(3, 5), getRand(3, 5), getRand(3, 5), listingId];
-
-  const reviewsQuery = `INSERT INTO reviews (name, avatar, date, review,
-    cleanliness, accuracy, comm, location, check_in, value, location_id)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
-
-  db.query(reviewsQuery, reviews, (err) => {
-    if (err) { console.error('Reviews: ', err); }
-  });
-};
-
-const addTags = (reviewId) => {
-  // [name, reviewId]
-  const tags = [tagGenerator(), reviewId];
-  const tagsQuery = 'INSERT INTO tags (tag, review_id) VALUES (?, ?);';
-
-  db.query(tagsQuery, tags, (err) => {
-    if (err) { console.error('Tags: ', err); }
-  });
-};
-
-/* Seed Data for 100 listings */
-let reviewId = 0;
-for (let i = 1; i <= 100; i += 1) {
-  addLocations();
-
-  // for every listing seed random number of reviews
-  for (let r = 1; r <= getRand(6, 100); r += 1) {
-    addReviews(i);
-
-    reviewId += 1;
-    // for every review add random tags to post
-    for (let t = 1; t <= getRand(1, 10); t += 1) {
-      // reviewId connects the tags that specific review
-      addTags(reviewId);
+const writeUserRows = (writer, encoding, callback) => {
+  let i = 1000
+  const write = () => {
+    let ok = true;
+    do {
+      i-=1;
+      const name = faker.internet.userName();
+      const avatar = faker.image.avatar();
+      const data = `${name},${avatar}\n`;
+      if (i===0) { //base case
+        writer.write(data, encoding, callback)
+      } else {
+        ok = writer.write(data,encoding);
+      }
+    } while (i > 0 && ok);
+    if (i>0) {
+      writer.once('drain', write);
     }
   }
+  write();
 }
 
-// end Connection to db
-db.end((err) => {
-  if (err) { console.error(err); }
+const writeRentalRows = (writer, encoding, callback) => {
+  let continents = ['noam','noam','noam','eu','eu','soam','asia','asia','asia','aus','aus', 'ind', 'ind'];
+  let i = 1000;
+  let ok = true;
+  const write = () => {
+    do {
+        i-=1;
+        const name = faker.fake("{{vehicle.color}} {{commerce.productName}} {{address.city}}")
+        const continent = continents[Math.floor(Math.random()*11)];
+        const data = `${name},${continent}\n`;
+        if (i===0) {
+          writer.write(data, encoding, callback);
+        } else {
+          ok = writer.write(data, encoding);
+        }
+    } while (i>0 && ok);
+    if (i>0) {
+      writer.once('drain', write);
+    }
+  }
+  write();
+}
 
-  console.log('DB has been Seeded!');
-});
+const writeReviewRows = (writer, encoding, callback) => {
+  let i = 1000
+  const write = () => {
+    let ok = true;
+    do {
+      i-=1;
+      const rental_id = faker.random.number({'min': 1, 'max': 1000}); //3000000
+      const user_id = faker.random.number({'min': 1, 'max': 1000}); //7000000
+      const timestamp = faker.date.past();
+      const review = faker.lorem.sentences();
+      const cleanliness = faker.random.number(5);
+      const accuracy = faker.random.number(5);
+      const comm = faker.random.number(5);
+      const location = faker.random.number(5);
+      const check_in = faker.random.number(5);
+      const value = faker.random.number(5);
+      const data = `${rental_id},${user_id},${timestamp},${review},${cleanliness},${accuracy},${comm},${location},${check_in},${value}\n`;
+      if (i===0) { //base case
+        writer.write(data, encoding, callback)
+      } else {
+        ok = writer.write(data,encoding);
+      }
+    } while (i > 0 && ok);
+    if (i>0) {
+      writer.once('drain', write);
+    }
+  }
+  write();
+}
+
+writeUserRows(writeUserCols, 'utf-8', ()=> {writeUserCols.end();});
+writeRentalRows(writeRentalCols, 'utf-8', ()=> {writeRentalCols.end();});
+writeReviewRows(writeReviewCols, 'utf-8', ()=> {writeReviewCols.end();});
+
+/*                          SEED USERS COMMAND */
+///Users/williameliason/sdc/sdc-review-component/server/db/csvData/users.csv
+// COPY users (name, avatar) FROM '/Users/williameliason/sdc/sdc-review-component/server/db/csvData/users.csv' WITH delimiter ',';
+
+/*                          SEED RENTALS COMMAND */
+///Users/williameliason/sdc/sdc-review-component/server/db/csvData/rentals.csv
+// COPY rentals (name, continent) from '/Users/williameliason/sdc/sdc-review-component/server/db/csvData/rentals.csv' WITH delimiter ',';
+
+/*                          SEED REVIEWS COMMAND */
+// COPY reviews (rental_id, user_id, timestamp, review, cleanliness, accuracy, comm, location, check_in, value) FROM '/Users/williameliason/sdc/sdc-review-component/server/db/csvData/reviews.csv' WITH delimiter ',';
