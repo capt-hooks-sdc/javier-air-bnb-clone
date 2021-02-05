@@ -7,7 +7,8 @@
     "dev_server": "nodemon server/server.js",
     "server": "node server/server.js",
     "config": "psql reviews-service < server/schema.sql",
-    "seed": "node server/seed/seed.js"
+    "seed": "node server/seed/seed.js",
+    "writecsv": "node server/seed/seed.js"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,8 @@
     "eslint-plugin-react-hooks": "^4.2.0"
   },
   "dependencies": {
+    "faker": "^5.3.1",
+    "fs": "0.0.1-security",
     "pg": "^8.5.1"
   }
 }

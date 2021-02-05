@@ -1,4 +1,5 @@
 
+
 -- DROP DATABASE "reviews-service";
 -- CREATE DATABASE "reviews-service";
 
@@ -26,16 +27,15 @@ CREATE TABLE "reviews" (
   "rental_id" INTEGER NOT NULL,
   "user_id" INTEGER NOT NULL,
   "timestamp" TEXT NOT NULL,
-  -- "name" VARCHAR(40) NOT NULL,
-  -- "avatar" TEXT NOT NULL,
-  -- "date"  VARCHAR(60) NOT NULL,
-  -- "review" TEXT NOT NULL,
-  -- "cleanliness" INTEGER NOT NULL,
-  -- "accuracy" INTEGER NOT NULL,
-  -- "comm" INTEGER NOT NULL,
-  -- "location" INTEGER NOT NULL,
-  -- "check_in" INTEGER NOT NULL,
-  -- "value" INTEGER NOT NULL,
+  "name" VARCHAR(40) NOT NULL,
+  "avatar" TEXT NOT NULL,
+  "review" TEXT NOT NULL,
+  "cleanliness" INTEGER NOT NULL,
+  "accuracy" INTEGER NOT NULL,
+  "comm" INTEGER NOT NULL,
+  "location" INTEGER NOT NULL,
+  "check_in" INTEGER NOT NULL,
+  "value" INTEGER NOT NULL,
   PRIMARY KEY ("review_id"),
   FOREIGN KEY ("rental_id")
     REFERENCES "rentals"("rental_id")
