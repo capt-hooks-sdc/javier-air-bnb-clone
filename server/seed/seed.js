@@ -6,7 +6,7 @@ const writeRentalCols = fs.createWriteStream('server/db/csvData/rentals.csv');
 const writeReviewCols = fs.createWriteStream('server/db/csvData/reviews.csv');
 
 const writeUserRows = (writer, encoding, callback) => {
-  let i = 1000
+  let i = 7000000
   const write = () => {
     let ok = true;
     do {
@@ -29,7 +29,7 @@ const writeUserRows = (writer, encoding, callback) => {
 
 const writeRentalRows = (writer, encoding, callback) => {
   let continents = ['noam','noam','noam','eu','eu','soam','asia','asia','asia','aus','aus', 'ind', 'ind'];
-  let i = 1000;
+  let i = 3000000;
   let ok = true;
   const write = () => {
     do {
@@ -51,13 +51,13 @@ const writeRentalRows = (writer, encoding, callback) => {
 }
 
 const writeReviewRows = (writer, encoding, callback) => {
-  let i = 1000
+  let i = 10000000
   const write = () => {
     let ok = true;
     do {
       i-=1;
-      const rental_id = faker.random.number({'min': 1, 'max': 1000}); //3000000
-      const user_id = faker.random.number({'min': 1, 'max': 1000}); //7000000
+      const rental_id = faker.random.number({'min': 1, 'max': 3000000}); //3000000
+      const user_id = faker.random.number({'min': 1, 'max': 7000000}); //7000000
       const timestamp = faker.date.past();
       const review = faker.lorem.sentences();
       const cleanliness = faker.random.number(5);
