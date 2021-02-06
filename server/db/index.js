@@ -1,19 +1,14 @@
-/* eslint-disable no-console */
-const mysql = require('mysql');
+const {Pool, Client} = require('pg');
 
-const connection = mysql.createConnection({
+
+const pool = new Pool({
   host: 'localhost',
-  user: 'javier',
-  password: 'reviews',
-  database: 'reviews',
+  database: 'reviews-service',
+  port: 5432
 });
 
-connection.connect((err) => {
-  if (err) {
-    console.error(err);
-  } else {
-    console.log('Connected to DB!');
-  }
-});
+pool.query('SELECT * FROM users WHERE user_id < 10', (err, res) => {
+  console.log(err, res.rows)
+  pool.end();
+})
 
-module.exports = connection;
