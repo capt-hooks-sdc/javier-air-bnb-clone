@@ -1,4 +1,4 @@
-const {Pool, Client} = require('pg');
+const {Pool} = require('pg');
 
 
 const pool = new Pool({
@@ -7,8 +7,33 @@ const pool = new Pool({
   port: 5432
 });
 
-pool.query('SELECT * FROM users WHERE user_id < 10', (err, res) => {
-  console.log(err, res.rows)
-  pool.end();
-})
+//GET ALL REVIEWS FOR A SPECIFIC RENTAL
+let getRentalReviews = (rentalID) => {
+  return (
+    pool
+    .query(`SELECT rev.*, ren.name, u.name FROM reviews rev, rentals ren, users u WHERE rev.rental_id = ${rentalID} AND ren.rental_id = ${rentalID} AND u.user_id = rev.user_id`)
+    .then((res) => {
+      return res.rows;
+    })
+    .catch(err => {
+      setImmediate(()=>{throw err})
+    }));
+}
+
+// //GET ALL REVIEWS FOR A SPECIFIC USER
+let getUserReviews = (userID) => {
+  return (
+    pool
+    .query(`SELECT r.*,u.name,u.avatar FROM reviews r, users u WHERE r.user_id = ${userID} AND u.user_id = ${userID}`)
+    .then((res) => {
+      return res.rows;
+    })
+    .catch(err => {
+      setImmediate(()=>{throw err})
+    }));
+}
+
+
+
+
 

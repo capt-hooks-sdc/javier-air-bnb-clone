@@ -42,3 +42,6 @@ CREATE TABLE "reviews" (
     REFERENCES "users"("user_id")
     ON DELETE CASCADE
 );
+
+CREATE INDEX ON "reviews" ("rental_id");
+CREATE INDEX ON "reviews" ("user_id");
