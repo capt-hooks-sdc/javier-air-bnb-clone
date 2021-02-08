@@ -33,6 +33,11 @@ let getUserReviews = (userID) => {
     }));
 }
 
+module.exports = {
+  getRentalReviews: getRentalReviews,
+  getUserReviews: getUserReviews
+}
+
 
 
 
