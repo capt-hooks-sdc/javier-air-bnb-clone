@@ -1,8 +1,9 @@
 /* eslint-disable no-console */
 const express = require('express');
+const bodyParser = require('body-parser');
 const path = require('path');
 const cors = require('cors');
-const {getRentalReviews, getUserReviews} = require('./db/index.js');
+const {getRentalReviews, getUserReviews, postNewReview} = require('./db/index.js');
 
 const app = express();
 
@@ -12,7 +13,7 @@ const app = express();
 app.use(cors({
   origin: 'http://54.157.193.11:8000/',
 }));
-
+app.use(bodyParser.json());
 app.use('/bundle', cors(), express.static(path.join(__dirname, '/../client/public/bundle.js')));
 app.use('/', cors(), express.static(path.join(__dirname, '/../client/public')));
 
@@ -31,6 +32,15 @@ app.get('/userReviews/:userID', (req, res) => {
     })
     .catch(err => {throw err})
 });
+
+app.post('/newReview', (req, res) => {
+  let revObj = req.body;
+  postNewReview(revObj)
+    .then(() => {res.sendStatus(200)})
+    .catch(err => {
+      console.log(err);
+      res.sendStatus(500)})
+})
 
 const PORT = 3002;
 
