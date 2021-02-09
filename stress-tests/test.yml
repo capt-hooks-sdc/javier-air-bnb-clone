@@ -1,0 +1,41 @@
+config:
+  target: "http://localhost:3002"
+  phases:
+    - duration: 120
+      arrivalRate: 10
+      rampTo: 50
+      name: "warm up 10->50arrivalrate"
+    - duration: 180
+      arrivalRate: 50
+      name: "sustained load 50 users/second"
+  payload:
+    path: "../server/csvData/ID.csv"
+    fields:
+      - "user_id"
+      - "rental_id"
+scenarios:
+  - flow:
+    - get:
+      url: "/rentalReviews/{{ rental_id }}"
+    - weight: 95
+  - flow:
+    - get:
+      url: "/userReviews/{{ user_id }}"
+    - weight: 25
+  - flow:
+    - post:
+      url: "/newReview"
+      json:
+        rentalID: "{{rental_id}}"
+        userID: "{{user_id}}"
+        timeStamp: "2021-02-12"
+        review: "this is a test review made by a virtual user via artillery"
+        cleanliness: 3
+        accuracy: 3
+        comm: 3
+        location: 3
+        check_in: 3
+        value: 3
+    - weight: 1
+
+
