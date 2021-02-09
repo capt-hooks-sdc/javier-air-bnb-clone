@@ -20,7 +20,7 @@ let getRentalReviews = (rentalID) => {
     }));
 }
 
-// //GET ALL REVIEWS FOR A SPECIFIC USER
+//GET ALL REVIEWS FOR A SPECIFIC USER
 let getUserReviews = (userID) => {
   return (
     pool
@@ -33,9 +33,42 @@ let getUserReviews = (userID) => {
     }));
 }
 
+//POST NEW REVIEW FOR A SPECIFIC USER AND RENTAL ID
+//(assumes user and rental already exist in db as would be the case in production)
+//review Obj contains all info for review including userID and rentalID
+/*    revObjschema {
+        rentalID: int,
+        userID: int,
+        timeStamp: string,
+        review: string,
+        cleanliness: int,
+        accuracy: int,
+        comm: int,
+        location: int,
+        check_in: int,
+        value: int
+      }
+*/
+let postNewReview = (revObj) => {
+  console.log('query: ', revObj.check_in);
+  return (
+    pool
+    .query(
+      `INSERT INTO reviews (rental_id, user_id, timestamp, review, cleanliness, accuracy, comm, location, check_in, value) VALUES (${revObj.rentalID},${revObj.userID},'${revObj.timeStamp}','${revObj.review}',${revObj.cleanliness},${revObj.accuracy},${revObj.comm},${revObj.location},${revObj.check_in},${revObj.value})`)
+    .then((res) => {
+      console.log('here');
+      return
+    })
+    .catch((err) => {
+      console.log('there');
+      throw err;
+    }));
+}
+
 module.exports = {
   getRentalReviews: getRentalReviews,
-  getUserReviews: getUserReviews
+  getUserReviews: getUserReviews,
+  postNewReview: postNewReview
 }
 
 
